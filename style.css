@@ -1,0 +1,159 @@
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #444444; /* Изменено на #525252 */
+    color: #000000;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 25px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid #d3d3d3;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #00a2ff;
+    margin-bottom: 5px;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #727272;
+    font-style: italic;
+    margin-top: 0;
+}
+
+h2 {
+    color: #00a2ff;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 8px;
+    font-size: 22px;
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+}
+
+input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: #00a2ff;
+    box-shadow: 0 0 0 2px rgba(0, 162, 255, 0.2);
+}
+
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.checkboxes {
+    margin: 15px 0;
+}
+
+.checkboxes label {
+    display: block;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+    cursor: pointer;
+}
+
+.checkboxes input {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    accent-color: #00a2ff;
+}
+
+.divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 30px 0;
+}
+
+ol {
+    padding-left: 25px;
+}
+
+ol li {
+    margin-bottom: 10px;
+}
+
+.note {
+    background-color: #f0f9ff;
+    padding: 12px;
+    border-left: 4px solid #00a2ff;
+    border-radius: 0 4px 4px 0;
+    margin: 20px 0;
+}
+
+.testimonial {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.testimonial:before {
+    content: """;
+    font-size: 60px;
+    color: #00a2ff;
+    opacity: 0.1;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.testimonial blockquote {
+    margin: 0;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+}
+
+.testimonial cite {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #727272;
+}
+
+/* Кнопка в стиле Roblox */
+.scan-button {
+    display: inline-block;
+    background-color: #00a2ff;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.scan-button:hover {
+    background-color: #0088cc;
+}
